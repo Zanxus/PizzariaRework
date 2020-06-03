@@ -14,6 +14,11 @@ namespace PizzariaRework
 
         internal static ObservableCollection<Pizza> PizzaList { get => pizzaList; set => pizzaList = value; }
 
+        public static ObservableCollection<Topping> ToppingList = new ObservableCollection<Topping> { new Topping("Cheese"), new Topping("Oregano"), new Topping("Ham"),
+                                                                                                      new Topping("Kebarb"), new Topping("Pepperoni"), new Topping("Dressing"),
+                                                                                                      new Topping("Mushrooms"), new Topping("Shrimp")};
+            
+
         //CreatePizza -Makes the Pizza using the Pizza Class Constructor and addeds to the list of pizzas
         public static void CreatePizza(int pizzaID, string name, Pizza.PizzaSize size, Pizza.PizzaDough dough, Pizza.PizzaSauce sauce, ObservableCollection<Topping> toppings, decimal price)
         {
@@ -99,5 +104,4 @@ namespace PizzariaRework
             PizzaList.Remove(ReadPizza(pizzaID));
         }
     }
-}
 }
