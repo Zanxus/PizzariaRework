@@ -9,22 +9,32 @@ namespace PizzariaRework
 {
     public static class PizzaController
     {
-        //CRUD Class
-        private static ObservableCollection<Pizza> pizzaList = new ObservableCollection<Pizza>();
+        //Handels the logic of the Pizza,Drink and Orders
 
-        internal static ObservableCollection<Pizza> PizzaList { get => pizzaList; set => pizzaList = value; }
+        public static ObservableCollection<Pizza> PizzaList = new ObservableCollection<Pizza>();
 
         public static ObservableCollection<Topping> ToppingList = new ObservableCollection<Topping> { new Topping("Cheese"), new Topping("Oregano"), new Topping("Ham"),
                                                                                                       new Topping("Kebarb"), new Topping("Pepperoni"), new Topping("Dressing"),
                                                                                                       new Topping("Mushrooms"), new Topping("Shrimp")};
-            
+
+        public static ObservableCollection<IOrderable> OrderList = new ObservableCollection<IOrderable>();
+        public static ObservableCollection<string> DrinkList = new ObservableCollection<string> {"Fanta", "Coca-Cola", "Pepsi Max"};
+
+        private static decimal _orderPrice;
+
+        public static decimal OrderPrice
+        {
+            get { return OrderSum() - DiscountCheck(); }
+            set { _orderPrice = value; }
+        }
+
 
         //CreatePizza -Makes the Pizza using the Pizza Class Constructor and addeds to the list of pizzas
-        public static void CreatePizza(int pizzaID, string name, Pizza.PizzaSize size, Pizza.PizzaDough dough, Pizza.PizzaSauce sauce, ObservableCollection<Topping> toppings, decimal price)
+        public static void CreatePizza(int pizzaID, string name, Pizza.PizzaSize size, Pizza.PizzaDough dough, Pizza.PizzaSauce sauce, ObservableCollection<Topping> toppings)
         {
             if (PizzaList.FirstOrDefault(x => x.PizzaID == pizzaID) == null || PizzaList.Count == 0)
             {
-                PizzaList.Add(new Pizza(pizzaID, name, size, dough, sauce, toppings, price));
+                PizzaList.Add(new Pizza(pizzaID, name, size, dough, sauce, toppings));
             }
             else
             {
@@ -81,7 +91,6 @@ namespace PizzariaRework
             pizza.Size = size;
             pizza.Dough = dough;
             pizza.Sauce = sauce;
-            pizza.Price = price;
         }
         //Overload version of the update, with no price
         public static void UpdatePizza(int pizzaID, string name, Pizza.PizzaSize size, Pizza.PizzaDough dough, Pizza.PizzaSauce sauce, ObservableCollection<Topping> toppings)
@@ -96,12 +105,54 @@ namespace PizzariaRework
         public static void UpdatePizza(int pizzaID, Pizza.PizzaSize size, decimal price)
         {
             ReadPizza(pizzaID).Size = size;
-            ReadPizza(pizzaID).Price = price;
         }
         //Removes a Pizza by ID
         public static void RemovePizza(int pizzaID)
         {
             PizzaList.Remove(ReadPizza(pizzaID));
+        }
+
+        public static decimal OrderSum()
+        {
+            decimal Sum = 0;
+            if (OrderList.Count !=0)
+            {
+                foreach (IOrderable order in OrderList)
+                {
+                    Sum += order.CalculatePrice();
+                }
+                return Sum;
+            }
+            else
+            {
+                return Sum;
+            }
+
+        }
+
+        public static decimal DiscountCheck()
+        {
+            int pizzaCount = 0;
+            int DrinkCount = 0;
+
+            foreach (IOrderable order in OrderList)
+            {
+                if (order is Pizza)
+                {
+                    pizzaCount++;
+                }
+                else if (order is Drink)
+                {
+                    DrinkCount++;
+                }
+            }
+
+            if (pizzaCount >= 2 && DrinkCount >= 2)
+            {
+                return 8;
+            }
+
+            return 0;
         }
     }
 }

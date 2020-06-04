@@ -7,16 +7,21 @@ using System.Threading.Tasks;
 
 namespace PizzariaRework
 {
-    public class Pizza
+    public class Pizza : IOrderable
     {
         public int PizzaID { get; set; }
         public string Name { get; set; }
-        public decimal Price { get; set; }
         public PizzaSize Size { get; set; }
         public PizzaDough Dough { get; set; }
         public PizzaSauce Sauce { get; set; }
+        private decimal price;
+        public decimal Price
+        {
+            get { return CalculatePrice(); }
+            set { price = value; }
+        }
         public ObservableCollection<Topping> Toppings { get; set; }
-        public Pizza(int pizzaID, string name, PizzaSize size, PizzaDough dough, PizzaSauce sauce, ObservableCollection<Topping> toppings, decimal price)
+        public Pizza(int pizzaID, string name, PizzaSize size, PizzaDough dough, PizzaSauce sauce, ObservableCollection<Topping> toppings)
         {
             this.PizzaID = pizzaID;
             this.Name = name;
@@ -24,7 +29,6 @@ namespace PizzariaRework
             this.Dough = dough;
             this.Sauce = sauce;
             this.Toppings = toppings;
-            this.Price = price;
         }
 
         public Pizza(int pizzaID, string name, PizzaSize size, PizzaDough dough, PizzaSauce sauce)
@@ -49,17 +53,15 @@ namespace PizzariaRework
             Tomato, Taco, NoSauce
         }
 
-        private decimal PizzaPrice()
+        public decimal CalculatePrice()
         {
-            decimal price = 60;
+            decimal price = 30;
             if (Size == PizzaSize.Familiy)
             {
                 price *= 2;
             };
-            if (this.Toppings.Count > 5)
-            {
-                price += 8;
-            }
+                price += Toppings.Count*8;
+
             return price;
         }
     }
